@@ -24,7 +24,7 @@ export const Store = {
   },
   async signUp(name, email, pw) {
     if (useSB) {
-      const r = await sb.auth.signUp({ email, password: pw, options: { data: { full_name: name }, emailRedirectTo: 'https://learninganddevelopment-hireginie.vercel.app' } })
+      const r = await sb.auth.signUp({ email, password: pw, options: { data: { full_name: name }, emailRedirectTo: 'https://learninganddevelopment-hireginie.vercel.app/#/login?confirmed=1' } })
       if (r.error) throw r.error
       if (r.data.user && r.data.user.identities && r.data.user.identities.length === 0) {
         throw new Error('An account with this email is already registered. Please sign in instead.')
