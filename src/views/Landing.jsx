@@ -1,10 +1,69 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { MODULES, TOPICS } from '../data.js'
 import { CONFIG } from '../config.js'
 import { useApp } from '../app-context.jsx'
 import { Icon } from '../icons.jsx'
 import { Button, pageMotion } from '../ui.jsx'
+
+function ModuleAccordion() {
+  const [open, setOpen] = useState(0)
+  return (
+    <div className="border border-line rounded-2xl overflow-hidden divide-y divide-line">
+      {MODULES.map((m, i) => {
+        const ts = TOPICS.filter((t) => t.m === m.id)
+        const isOpen = open === i
+        return (
+          <div key={m.id}>
+            <button
+              onClick={() => setOpen(isOpen ? -1 : i)}
+              className="w-full flex items-center gap-4 px-6 py-4 text-left bg-surface hover:bg-surface2 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full bg-accent-soft text-accent-d grid place-items-center flex-none text-sm font-semibold">
+                {m.n}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-[15px]">{m.title}</div>
+                <div className="text-[13px] text-muted">{ts.length} topics</div>
+              </div>
+              <motion.svg
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+                width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                className="text-muted flex-none"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </motion.svg>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  key="content"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: 'easeInOut' }}
+                  className="overflow-hidden bg-bg"
+                >
+                  <div className="px-6 py-3 grid sm:grid-cols-2 gap-x-8 gap-y-1">
+                    {ts.map((t) => (
+                      <div key={t.id} className="flex items-center gap-2.5 py-1.5 text-[14px] text-muted">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent flex-none" />
+                        {t.title}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 const STATS = [
   ['24', 'Topics'],
@@ -75,44 +134,10 @@ export default function Landing() {
         </div>
 
         {/* modules */}
-        <div className="flex items-baseline justify-between gap-4 flex-wrap mt-14 mb-6">
-          <h2 className="font-serif text-3xl m-0">What you will learn</h2>
-          <span className="text-muted text-[15px]">Six modules, building from foundations to strategy.</span>
-        </div>
-        <div className="grid gap-[18px] md:grid-cols-3">
-          {MODULES.map((m, i) => {
-            const ts = TOPICS.filter((t) => t.m === m.id)
-            return (
-              <motion.div
-                key={m.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ delay: (i % 3) * 0.08, type: 'spring', stiffness: 220, damping: 24 }}
-                whileHover={{ y: -6 }}
-                className="bg-surface border border-line rounded-2xl p-6 shadow-[var(--shadow-soft)]"
-              >
-                <div className="flex items-center gap-3 mb-1.5">
-                  <div className="w-10 h-10 rounded-xl bg-accent-soft text-accent-d grid place-items-center">
-                    <Icon name={ts[0].icon} className="!w-5 !h-5" />
-                  </div>
-                  <div>
-                    <div className="text-xs tracking-[0.1em] uppercase text-faint">Module {m.n}</div>
-                    <h3 className="m-0 text-[19px]">{m.title}</h3>
-                  </div>
-                </div>
-                <p className="text-muted text-sm mt-2 mb-4">{m.blurb}</p>
-                <div className="flex flex-col gap-0.5">
-                  {ts.map((t) => (
-                    <div key={t.id} className="flex items-center gap-2.5 px-2.5 py-1.5 text-[14px]">
-                      <span className="w-2 h-2 rounded-full border-[1.6px] border-line flex-none" />
-                      <span>{t.title}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )
-          })}
+        <div className="mt-14 mb-2">
+          <h2 className="font-serif text-3xl mb-1">There are {MODULES.length} modules in this course</h2>
+          <p className="text-muted text-[15px] mb-7">Six modules building from foundations to strategy — {TOPICS.length} topics in total.</p>
+          <ModuleAccordion />
         </div>
       </div>
     </motion.div>
