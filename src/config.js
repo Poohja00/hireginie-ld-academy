@@ -1,6 +1,6 @@
 export const CONFIG = {
-  SUPABASE_URL: "",          // e.g. "https://abcd1234.supabase.co"
-  SUPABASE_ANON_KEY: "",     // e.g. "eyJhbGciOi..."
+  SUPABASE_URL: "https://etluufmaxhrsdfawyrmo.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0bHV1Zm1heGhyc2RmYXd5cm1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1MDg1MDksImV4cCI6MjA5ODA4NDUwOX0.w74cu62w_qFc3F0v_W5CQYm8jUbue0ATayXzllOL9Eg",
 
   BRAND: "Hireginie",
   PROGRAM_NAME: "L&D Academy",
