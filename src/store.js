@@ -27,6 +27,9 @@ export const Store = {
       const redirectTo = window.location.origin + window.location.pathname
       const r = await sb.auth.signUp({ email, password: pw, options: { data: { full_name: name }, emailRedirectTo: redirectTo } })
       if (r.error) throw r.error
+      if (r.data.user && r.data.user.identities && r.data.user.identities.length === 0) {
+        throw new Error('An account with this email is already registered. Please sign in instead.')
+      }
       if (!r.data.session) return { needConfirm: true }
       this.user = { id: r.data.user.id, email, name }
       return {}
