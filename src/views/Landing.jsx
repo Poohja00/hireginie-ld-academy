@@ -7,35 +7,55 @@ import { useApp } from '../app-context.jsx'
 import { Icon } from '../icons.jsx'
 import { Button, pageMotion } from '../ui.jsx'
 
+const MODULE_COLORS = [
+  { bg: 'bg-[#fdf3ee]', badge: 'bg-[#f0d5c8] text-[#a04d2a]', dot: 'bg-[#d2613a]' },
+  { bg: 'bg-[#eef4fd]', badge: 'bg-[#c8d9f0] text-[#2a4da0]', dot: 'bg-[#3a61d2]' },
+  { bg: 'bg-[#f0fdf4]', badge: 'bg-[#c8f0d5] text-[#1a6e39]', dot: 'bg-[#22a355]' },
+  { bg: 'bg-[#fdf8ee]', badge: 'bg-[#f0e8c8] text-[#8a6010]', dot: 'bg-[#c8920a]' },
+  { bg: 'bg-[#f5eeff]', badge: 'bg-[#e0c8f5] text-[#6a2aa0]', dot: 'bg-[#9b4dd2]' },
+  { bg: 'bg-[#fff0f3]', badge: 'bg-[#f5c8d0] text-[#a02a40]', dot: 'bg-[#d23a55]' },
+]
+
 function ModuleAccordion() {
   const [open, setOpen] = useState(0)
   return (
-    <div className="border border-line rounded-2xl overflow-hidden divide-y divide-line">
+    <div className="flex flex-col gap-3">
       {MODULES.map((m, i) => {
         const ts = TOPICS.filter((t) => t.m === m.id)
         const isOpen = open === i
+        const c = MODULE_COLORS[i] || MODULE_COLORS[0]
         return (
-          <div key={m.id}>
+          <motion.div
+            key={m.id}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ delay: i * 0.05, type: 'spring', stiffness: 240, damping: 26 }}
+            className={`rounded-2xl border border-line overflow-hidden transition-shadow ${isOpen ? 'shadow-[var(--shadow-soft)]' : ''}`}
+          >
             <button
               onClick={() => setOpen(isOpen ? -1 : i)}
-              className="w-full flex items-center gap-4 px-6 py-4 text-left bg-surface hover:bg-surface2 transition-colors"
+              className={`w-full flex items-center gap-4 px-5 py-4 text-left transition-colors ${isOpen ? c.bg : 'bg-surface hover:bg-surface2'}`}
             >
-              <div className="w-8 h-8 rounded-full bg-accent-soft text-accent-d grid place-items-center flex-none text-sm font-semibold">
+              <div className={`w-9 h-9 rounded-xl grid place-items-center flex-none text-[13px] font-bold ${c.badge}`}>
                 {m.n}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-[15px]">{m.title}</div>
-                <div className="text-[13px] text-muted">{ts.length} topics</div>
+                <div className="font-semibold text-[15px] leading-snug">{m.title}</div>
+                <div className="text-[13px] text-muted mt-0.5">{m.blurb}</div>
               </div>
-              <motion.svg
-                animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-                width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                className="text-muted flex-none"
-              >
-                <path d="M6 9l6 6 6-6" />
-              </motion.svg>
+              <div className="flex items-center gap-3 flex-none">
+                <span className="hidden sm:block text-[12px] text-muted whitespace-nowrap">{ts.length} topics</span>
+                <motion.svg
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  className="text-muted flex-none"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </motion.svg>
+              </div>
             </button>
             <AnimatePresence initial={false}>
               {isOpen && (
@@ -45,20 +65,25 @@ function ModuleAccordion() {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.22, ease: 'easeInOut' }}
-                  className="overflow-hidden bg-bg"
+                  className="overflow-hidden"
                 >
-                  <div className="px-6 py-3 grid sm:grid-cols-2 gap-x-8 gap-y-1">
-                    {ts.map((t) => (
-                      <div key={t.id} className="flex items-center gap-2.5 py-1.5 text-[14px] text-muted">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent flex-none" />
-                        {t.title}
+                  <div className="px-5 pt-1 pb-4 grid sm:grid-cols-2 gap-x-6 gap-y-0.5 bg-surface">
+                    {ts.map((t, ti) => (
+                      <div key={t.id} className="flex items-center gap-3 py-2 border-b border-line/60 last:border-0 sm:even:border-0">
+                        <span className={`w-5 h-5 rounded-full grid place-items-center flex-none text-[10px] font-bold text-white ${c.dot}`}>
+                          {ti + 1}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[14px] text-ink">{t.title}</span>
+                        </div>
+                        <span className="text-[11px] text-faint flex-none">{t.read} min</span>
                       </div>
                     ))}
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </motion.div>
         )
       })}
     </div>
