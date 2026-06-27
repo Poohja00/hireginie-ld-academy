@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+*.local
+.vite/
+
+# Claude / AI agent files
+.claude/
+CLAUDE.md
+claude.md
+agent.md
+*.agent.md
