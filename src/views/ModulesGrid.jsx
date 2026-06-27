@@ -58,7 +58,7 @@ export default function ModulesGrid({ progress }) {
             {!unlocked ? (
               <p className="text-faint text-sm mb-4 flex items-center gap-1.5">
                 <Icon name="lock" className="!w-3.5 !h-3.5 flex-none" />
-                Complete <b className="text-muted">{prevMod?.title}</b> to unlock · {done}/{ts.length} topics done
+                Complete <b className="text-muted">Module {prevMod?.n}</b> to unlock · {done}/{ts.length} topics done
               </p>
             ) : (
               <p className="text-muted text-sm mb-4">{m.blurb}</p>
