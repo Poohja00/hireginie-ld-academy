@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Store, PREVIEW } from '../store.js'
 import { CONFIG } from '../config.js'
 import { useApp } from '../app-context.jsx'
@@ -10,6 +10,8 @@ import { Icon } from '../icons.jsx'
 export default function Auth({ mode }) {
   const signup = mode === 'signup'
   const nav = useNavigate()
+  const location = useLocation()
+  const justConfirmed = !signup && new URLSearchParams(location.search).get('confirmed') === '1'
   const { refreshUser } = useApp()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -109,6 +111,17 @@ export default function Auth({ mode }) {
           {CONFIG.BRAND} {CONFIG.PROGRAM_NAME}
         </div>
         <h2 className="serif text-center text-3xl mb-6">{signup ? 'Create your account' : 'Welcome back'}</h2>
+        {justConfirmed && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-2.5 bg-good/10 border border-good/25 rounded-xl px-4 py-3 mb-4"
+          >
+            <svg className="w-4 h-4 text-good flex-none mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <p className="text-good text-[13.5px]">Email confirmed! You can now sign in.</p>
+          </motion.div>
+        )}
         <motion.form
           onSubmit={submit}
           initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}

@@ -7,6 +7,12 @@ import './index.css'
 
 await Store.init()
 
+// Supabase email confirmation lands here with tokens in the URL hash.
+// Intercept before HashRouter processes it and redirect to the login page.
+if (window.location.hash.includes('access_token=')) {
+  window.history.replaceState(null, '', '/#/login?confirmed=1')
+}
+
 createRoot(document.getElementById('root')).render(
   <HashRouter>
     <AppProvider initialUser={Store.user}>

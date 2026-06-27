@@ -24,7 +24,8 @@ export const Store = {
   },
   async signUp(name, email, pw) {
     if (useSB) {
-      const r = await sb.auth.signUp({ email, password: pw, options: { data: { full_name: name } } })
+      const redirectTo = window.location.origin + window.location.pathname
+      const r = await sb.auth.signUp({ email, password: pw, options: { data: { full_name: name }, emailRedirectTo: redirectTo } })
       if (r.error) throw r.error
       if (!r.data.session) return { needConfirm: true }
       this.user = { id: r.data.user.id, email, name }
