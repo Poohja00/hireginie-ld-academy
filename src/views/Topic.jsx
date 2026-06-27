@@ -6,6 +6,7 @@ import { TOPICS, MODULES } from '../data.js'
 import { useApp } from '../app-context.jsx'
 import { Icon } from '../icons.jsx'
 import { Button, pageMotion } from '../ui.jsx'
+import { moduleUnlocked } from './ModulesGrid.jsx'
 
 const topicById = (id) => TOPICS.find((t) => t.id === id)
 const moduleById = (id) => MODULES.find((m) => m.id === id)
@@ -22,6 +23,7 @@ export default function Topic() {
 
   if (!t) { nav('/dashboard'); return null }
   if (!progress) return <div className="py-24 text-center text-muted">Loading…</div>
+  if (!moduleUnlocked(t.m, progress)) { nav('/dashboard'); return null }
 
   const learned = progress.has(id)
   const mod = moduleById(t.m)

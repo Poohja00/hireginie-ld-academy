@@ -5,7 +5,7 @@ import { Store } from '../store.js'
 import { TOPICS } from '../data.js'
 import { useApp } from '../app-context.jsx'
 import { Button, Ring, Eyebrow, pageMotion } from '../ui.jsx'
-import ModulesGrid from './ModulesGrid.jsx'
+import ModulesGrid, { moduleUnlocked } from './ModulesGrid.jsx'
 
 function CountUp({ to, suffix = '' }) {
   const [n, setN] = useState(0)
@@ -76,7 +76,7 @@ export default function Dashboard() {
               ))}
             </div>
             <div className="flex gap-3 flex-wrap mt-4">
-              <Button iconRight="arrow" onClick={() => { const next = TOPICS.find((t) => !prog.has(t.id)) || TOPICS[0]; nav('/topic/' + next.id) }}>
+              <Button iconRight="arrow" onClick={() => { const next = TOPICS.find((t) => !prog.has(t.id) && moduleUnlocked(t.m, prog)) || TOPICS[0]; nav('/topic/' + next.id) }}>
                 {prog.size < TOPICS.length ? 'Continue learning' : 'Review topics'}
               </Button>
               <div className="relative group">

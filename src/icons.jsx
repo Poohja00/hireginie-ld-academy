@@ -32,6 +32,7 @@ const P = {
   spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
   bolt: '<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>',
   play: '<path d="M7 4v16l13-8z"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
 }
 
 export function Icon({ name, className = '' }) {
