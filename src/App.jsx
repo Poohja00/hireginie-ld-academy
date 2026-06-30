@@ -29,6 +29,11 @@ const NAV = [
   ['/certificate', 'Certificate'],
 ]
 
+const ADMIN_NAV = [
+  ['/curriculum', 'Curriculum'],
+  ['/certificate', 'Certificate'],
+]
+
 function Header() {
   const { user, isAdmin, refreshUser } = useApp()
   const nav = useNavigate()
@@ -56,7 +61,7 @@ function Header() {
 
         {user && (
           <nav className="flex gap-1.5 ml-auto">
-            {NAV.map(([to, label]) => (
+            {(isAdmin ? ADMIN_NAV : NAV).map(([to, label]) => (
               <NavLink
                 key={to}
                 to={to}
@@ -143,6 +148,13 @@ function Protected({ children }) {
   return children
 }
 
+function LearnerOnly({ children }) {
+  const { user, isAdmin } = useApp()
+  if (!user) return <Navigate to="/login" replace />
+  if (isAdmin) return <Navigate to="/admin" replace />
+  return children
+}
+
 function AdminProtected({ children }) {
   const { user, isAdmin } = useApp()
   if (!user) return <Navigate to="/login" replace />
@@ -166,11 +178,11 @@ export default function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Auth mode="login" />} />
             <Route path="/signup" element={<Auth mode="signup" />} />
-            <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
+            <Route path="/dashboard" element={<LearnerOnly><Dashboard /></LearnerOnly>} />
             <Route path="/curriculum" element={<Protected><Curriculum /></Protected>} />
-            <Route path="/topic/:id" element={<Protected><Topic /></Protected>} />
-            <Route path="/exam" element={<Protected><Exam /></Protected>} />
-            <Route path="/results" element={<Protected><Results /></Protected>} />
+            <Route path="/topic/:id" element={<LearnerOnly><Topic /></LearnerOnly>} />
+            <Route path="/exam" element={<LearnerOnly><Exam /></LearnerOnly>} />
+            <Route path="/results" element={<LearnerOnly><Results /></LearnerOnly>} />
             <Route path="/certificate" element={<Protected><Certificate /></Protected>} />
             <Route path="/admin" element={<AdminProtected><AdminDashboard /></AdminProtected>} />
             <Route path="/admin-login" element={<AdminLogin />} />

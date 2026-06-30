@@ -15,7 +15,7 @@ export const Admin = {
   async listUsers() {
     assertSB()
     const [profiles, progress, attempts, certs] = await Promise.all([
-      sb.from('profiles').select('*').order('created_at', { ascending: false }),
+      sb.from('profiles').select('*').eq('is_admin', false).order('created_at', { ascending: false }),
       sb.from('progress').select('user_id, topic_id'),
       sb.from('attempts').select('user_id, percent, passed, created_at'),
       sb.from('certificates').select('*'),
@@ -73,6 +73,20 @@ export const Admin = {
   async deleteCertificate(certId) {
     assertSB()
     const r = await sb.from('certificates').delete().eq('id', certId)
+    if (r.error) throw r.error
+  },
+
+  // Universal certificate template: one shared row admins edit, that every
+  // learner's certificate renders against (background image + name position).
+  async getCertTemplate() {
+    if (!useSB) return null
+    const r = await sb.from('cert_template').select('*').eq('id', 1).single()
+    return r.data || null
+  },
+
+  async saveCertTemplate(template) {
+    assertSB()
+    const r = await sb.from('cert_template').upsert({ id: 1, ...template, updated_at: new Date().toISOString() })
     if (r.error) throw r.error
   },
 

@@ -7,6 +7,8 @@ import { CONFIG } from '../config.js'
 import { useApp } from '../app-context.jsx'
 import { Icon } from '../icons.jsx'
 import { Button, Eyebrow, pageMotion } from '../ui.jsx'
+import { Admin } from '../admin.js'
+import AdminCertManager from './AdminCertManager.jsx'
 
 const THRESH = CONFIG.CERT_PASS_THRESHOLD || 80
 const REQ_ALL = CONFIG.CERT_REQUIRE_ALL_TOPICS !== false
@@ -15,15 +17,58 @@ function randId() {
   return 'HIRG-LD-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2, 8).toUpperCase()
 }
 
+// Renders against the admin-uploaded template (background image + name
+// position) when one exists; falls back to the built-in coded design.
+export function CertCanvas({ template, fullName, percent, dateStr, certId }) {
+  if (template && template.image_url) {
+    return (
+      <div className="relative w-full bg-white">
+        <img src={template.image_url} alt="Certificate" className="w-full h-auto block" />
+        <div
+          className="absolute -translate-x-1/2 -translate-y-1/2 font-serif text-center whitespace-nowrap"
+          style={{ top: `${template.name_top}%`, left: `${template.name_left}%`, fontSize: `${template.font_size}px`, color: template.color }}
+        >
+          {fullName}
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="relative w-full bg-surface border border-line text-center px-10 py-14 md:px-16 shadow-[var(--shadow-lift)]">
+      <span className="absolute inset-3.5 border-[1.5px] border-accent pointer-events-none" />
+      <span className="absolute inset-5 border-[0.5px] border-line pointer-events-none" />
+      <img src="/logo.png" alt={CONFIG.BRAND} className="h-12 w-auto mx-auto mb-4" />
+      <div className="text-xs tracking-[0.28em] uppercase text-accent-d">Certificate of Completion</div>
+      <div className="text-muted mt-4.5">This certifies that</div>
+      <div className="font-serif text-[42px] mt-3.5 mb-1.5">{fullName}</div>
+      <div className="w-[120px] h-px bg-accent mx-auto my-4" />
+      <div className="text-muted max-w-[520px] mx-auto">
+        has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme - all {TOPICS.length} topics
+        across 6 modules - and passed the certification exam with a score of <b>{percent}%</b>.
+      </div>
+      <div className="flex justify-between mt-10 text-[13px]">
+        <div className="text-left">
+          <b className="font-serif block text-base text-ink">{dateStr}</b>
+          <span className="text-faint text-[11px] uppercase tracking-[0.08em]">Date of issue</span>
+        </div>
+        <div className="text-right">
+          <b className="font-serif block text-base text-ink">{certId}</b>
+          <span className="text-faint text-[11px] uppercase tracking-[0.08em]">Credential ID</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Certificate() {
   const nav = useNavigate()
-  const { user } = useApp()
+  const { user, isAdmin } = useApp()
   const [state, setState] = useState(null)
 
   useEffect(() => {
+    if (isAdmin) return
     (async () => {
-      const prog = await Store.getProgress()
-      const atts = await Store.getAttempts()
+      const [prog, atts, template] = await Promise.all([Store.getProgress(), Store.getAttempts(), Admin.getCertTemplate()])
       const best = atts.reduce((m, a) => Math.max(m, a.percent || 0), 0)
       const passedExam = atts.some((a) => a.passed)
       const allTopics = prog.size >= TOPICS.length
@@ -36,9 +81,11 @@ export default function Certificate() {
           await Store.saveCert(cert)
         }
       }
-      setState({ prog, passedExam, allTopics, eligible, cert })
+      setState({ prog, passedExam, allTopics, eligible, cert, template })
     })()
-  }, [])
+  }, [isAdmin])
+
+  if (isAdmin) return <AdminCertManager />
 
   if (!state) return <div className="py-24 text-center text-muted">Loading…</div>
 
@@ -89,29 +136,7 @@ export default function Certificate() {
             {/* blurred demo certificate */}
             <div className="relative select-none">
               <div className="blur-[3px] opacity-60 pointer-events-none">
-                <div className="relative w-full bg-surface border border-line text-center px-10 py-14 md:px-16 shadow-[var(--shadow-lift)]">
-                  <span className="absolute inset-3.5 border-[1.5px] border-accent pointer-events-none" />
-                  <span className="absolute inset-5 border-[0.5px] border-line pointer-events-none" />
-                  <img src="/logo.png" alt={CONFIG.BRAND} className="h-12 w-auto mx-auto mb-4" />
-                  <div className="text-xs tracking-[0.28em] uppercase text-accent-d">Certificate of Completion</div>
-                  <div className="text-muted mt-4.5">This certifies that</div>
-                  <div className="font-serif text-[42px] mt-3.5 mb-1.5">{demoCert.full_name}</div>
-                  <div className="w-[120px] h-px bg-accent mx-auto my-4" />
-                  <div className="text-muted max-w-[520px] mx-auto">
-                    has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme - all {TOPICS.length} topics
-                    across 6 modules - and passed the certification exam with a score of <b>{demoCert.percent}%</b>.
-                  </div>
-                  <div className="flex justify-between mt-10 text-[13px]">
-                    <div className="text-left">
-                      <b className="font-serif block text-base text-ink">{d}</b>
-                      <span className="text-faint text-[11px] uppercase tracking-[0.08em]">Date of issue</span>
-                    </div>
-                    <div className="text-right">
-                      <b className="font-serif block text-base text-ink">{demoCert.id}</b>
-                      <span className="text-faint text-[11px] uppercase tracking-[0.08em]">Credential ID</span>
-                    </div>
-                  </div>
-                </div>
+                <CertCanvas template={state.template} fullName={demoCert.full_name} percent={demoCert.percent} dateStr={d} certId={demoCert.id} />
               </div>
 
               {/* overlay badge */}
@@ -148,29 +173,9 @@ export default function Certificate() {
         <motion.div
           initial={{ opacity: 0, scale: 0.94, rotateX: 8 }} animate={{ opacity: 1, scale: 1, rotateX: 0 }}
           transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-          className="relative w-full max-w-[820px] bg-surface border border-line text-center px-10 py-14 md:px-16 shadow-[var(--shadow-lift)]"
+          className="relative w-full max-w-[820px]"
         >
-          <span className="absolute inset-3.5 border-[1.5px] border-accent pointer-events-none" />
-          <span className="absolute inset-5 border-[0.5px] border-line pointer-events-none" />
-          <img src="/logo.png" alt={CONFIG.BRAND} className="h-12 w-auto mx-auto mb-4" />
-          <div className="text-xs tracking-[0.28em] uppercase text-accent-d">Certificate of Completion</div>
-          <div className="text-muted mt-4.5">This certifies that</div>
-          <div className="font-serif text-[42px] mt-3.5 mb-1.5">{cert.full_name}</div>
-          <div className="w-[120px] h-px bg-accent mx-auto my-4" />
-          <div className="text-muted max-w-[520px] mx-auto">
-            has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme - all {TOPICS.length} topics
-            across 6 modules - and passed the certification exam with a score of <b>{cert.percent}%</b>.
-          </div>
-          <div className="flex justify-between mt-10 text-[13px]">
-            <div className="text-left">
-              <b className="font-serif block text-base text-ink">{d}</b>
-              <span className="text-faint text-[11px] uppercase tracking-[0.08em]">Date of issue</span>
-            </div>
-            <div className="text-right">
-              <b className="font-serif block text-base text-ink">{cert.id}</b>
-              <span className="text-faint text-[11px] uppercase tracking-[0.08em]">Credential ID</span>
-            </div>
-          </div>
+          <CertCanvas template={state.template} fullName={cert.full_name} percent={cert.percent} dateStr={d} certId={cert.id} />
         </motion.div>
 
         <div className="no-print flex gap-3">

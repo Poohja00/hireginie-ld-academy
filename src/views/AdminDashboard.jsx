@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Admin } from '../admin.js'
-import { CONFIG } from '../config.js'
 import { useApp } from '../app-context.jsx'
 import { Icon } from '../icons.jsx'
 import { Button, Eyebrow, pageMotion } from '../ui.jsx'
+import { CertCanvas } from './Certificate.jsx'
 
 function initials(n, e) {
   n = n || e || ''
@@ -21,10 +21,7 @@ function StatCard({ label, value, accent }) {
   )
 }
 
-function CertModal({ user, onClose, onIssue, onRevoke, busy }) {
-  const [name, setName] = useState(user.full_name || user.email)
-  const [percent, setPercent] = useState(user.bestScore || 80)
-
+function CertModal({ user, template, onClose, onRevoke, busy }) {
   const cert = user.cert
   const d = cert ? new Date(cert.issued_at || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : null
 
@@ -46,59 +43,19 @@ function CertModal({ user, onClose, onIssue, onRevoke, busy }) {
 
         {cert ? (
           <>
-            <div className="relative w-full bg-surface border border-line text-center px-7 py-10 shadow-[var(--shadow-soft)] mb-4">
-              <span className="absolute inset-2.5 border-[1.5px] border-accent pointer-events-none" />
-              <span className="absolute inset-4 border-[0.5px] border-line pointer-events-none" />
-              <img src="/logo.png" alt={CONFIG.BRAND} className="h-9 w-auto mx-auto mb-3" />
-              <div className="text-[10px] tracking-[0.24em] uppercase text-accent-d">Certificate of Completion</div>
-              <div className="text-muted text-sm mt-3">This certifies that</div>
-              <div className="font-serif text-[28px] mt-2 mb-1">{cert.full_name}</div>
-              <div className="w-[90px] h-px bg-accent mx-auto my-3" />
-              <div className="text-muted text-[13px] max-w-[420px] mx-auto">
-                has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme with a score of <b>{cert.percent}%</b>.
-              </div>
-              <div className="flex justify-between mt-7 text-[11px]">
-                <div className="text-left">
-                  <b className="font-serif block text-sm text-ink">{d}</b>
-                  <span className="text-faint text-[10px] uppercase tracking-[0.08em]">Date of issue</span>
-                </div>
-                <div className="text-right">
-                  <b className="font-serif block text-sm text-ink">{cert.id}</b>
-                  <span className="text-faint text-[10px] uppercase tracking-[0.08em]">Credential ID</span>
-                </div>
-              </div>
+            <div className="mb-4 rounded-xl overflow-hidden border border-line">
+              <CertCanvas template={template} fullName={cert.full_name} percent={cert.percent} dateStr={d} certId={cert.id} />
             </div>
             <div className="flex gap-2.5 flex-wrap">
               <Button icon="download" size="sm" onClick={() => window.print()}>Print / Save as PDF</Button>
-              <Button variant="ghost" size="sm" onClick={() => onIssue(user.id, name, percent)} disabled={busy}>Re-issue (new ID)</Button>
               <Button variant="ghost" size="sm" className="!text-bad !border-bad/40" onClick={() => onRevoke(cert.id)} disabled={busy}>Revoke certificate</Button>
             </div>
           </>
         ) : (
-          <>
-            <p className="text-muted text-sm mb-4">
-              This user hasn't earned a certificate yet ({user.topicsDone}/{user.topicsTotal} topics · best exam score {user.bestScore}%).
-              You can manually issue one below - useful for exceptions handled outside the platform.
-            </p>
-            <div className="bg-surface border border-line rounded-xl p-4 flex flex-col gap-3">
-              <div>
-                <label className="block text-[13px] text-muted mb-1.5">Name on certificate</label>
-                <input
-                  className="w-full px-3.5 py-2.5 border border-line rounded-xl text-[15px] bg-surface2 focus:outline-none focus:border-accent"
-                  value={name} onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-[13px] text-muted mb-1.5">Score (%)</label>
-                <input
-                  type="number" min="0" max="100"
-                  className="w-full px-3.5 py-2.5 border border-line rounded-xl text-[15px] bg-surface2 focus:outline-none focus:border-accent"
-                  value={percent} onChange={(e) => setPercent(e.target.value)}
-                />
-              </div>
-              <Button onClick={() => onIssue(user.id, name, percent)} disabled={busy}>{busy ? 'Issuing…' : 'Issue certificate'}</Button>
-            </div>
-          </>
+          <p className="text-muted text-sm">
+            This learner hasn't earned a certificate yet ({user.topicsDone}/{user.topicsTotal} topics, best exam score {user.bestScore}%).
+            A certificate appears here automatically once they complete all topics and pass the exam.
+          </p>
         )}
       </motion.div>
     </motion.div>
@@ -115,13 +72,15 @@ export default function AdminDashboard() {
   const [sortBy, setSortBy] = useState('joined')
   const [busyId, setBusyId] = useState(null)
   const [certUser, setCertUser] = useState(null)
+  const [template, setTemplate] = useState(null)
   const [bulkThreshold, setBulkThreshold] = useState(50)
 
   async function load() {
     try {
       setError('')
-      const data = await Admin.listUsers()
+      const [data, tmpl] = await Promise.all([Admin.listUsers(), Admin.getCertTemplate()])
       setUsers(data)
+      setTemplate(tmpl)
     } catch (e) {
       setError(e.message || 'Failed to load users.')
     }
@@ -173,8 +132,8 @@ export default function AdminDashboard() {
   }
 
   function remind(u) {
-    window.location.href = Admin.buildReminderMailto(u.email, u.full_name, u.pct)
-    showToast(`Opening a reminder email to ${u.email}…`)
+    window.open(Admin.buildReminderMailto(u.email, u.full_name, u.pct), '_blank')
+    showToast(`Opening a reminder email to ${u.email} in a new tab`)
   }
 
   function bulkRemind() {
@@ -183,19 +142,6 @@ export default function AdminDashboard() {
     setStatusFilter('active')
     setCertFilter('not-certified')
     showToast(`Filtered to ${targets.length} learner(s) below ${bulkThreshold}% - click the mail icon on each to send`)
-  }
-
-  async function issueCert(userId, name, percent) {
-    setBusyId(userId)
-    try {
-      const cert = await Admin.issueCertificate(userId, name, Number(percent))
-      setUsers((prev) => prev.map((x) => (x.id === userId ? { ...x, certified: true, cert: { ...cert, issued_at: new Date().toISOString() } } : x)))
-      setCertUser((prev) => prev && { ...prev, certified: true, cert: { ...cert, issued_at: new Date().toISOString() } })
-      showToast('Certificate issued')
-    } catch (e) {
-      showToast(e.message || 'Failed to issue certificate')
-    }
-    setBusyId(null)
   }
 
   async function revokeCert(certId) {
@@ -357,9 +303,9 @@ export default function AdminDashboard() {
         {certUser && (
           <CertModal
             user={certUser}
+            template={template}
             busy={busyId === certUser.id}
             onClose={() => setCertUser(null)}
-            onIssue={issueCert}
             onRevoke={revokeCert}
           />
         )}
