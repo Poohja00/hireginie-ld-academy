@@ -170,7 +170,7 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <motion.div {...pageMotion} className="py-14 pb-24">
-        <div className="wrap max-w-[600px] text-center">
+        <div className="wrap text-center" style={{ maxWidth: 600 }}>
           <Eyebrow>Admin</Eyebrow>
           <h2 className="font-serif text-2xl mb-2">Couldn't load the roster</h2>
           <p className="text-muted text-sm mb-4">{error}</p>
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
 
   return (
     <motion.div {...pageMotion} className="py-14 pb-24">
-      <div className="wrap max-w-[1100px]">
+      <div className="wrap" style={{ maxWidth: 1100 }}>
         <Eyebrow>Admin</Eyebrow>
         <h2 className="font-serif text-3xl mb-1">Learner roster</h2>
         <p className="text-muted text-[15px] mb-6">Track progress, send reminders, and manage certificates.</p>

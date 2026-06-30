@@ -47,7 +47,9 @@ h1, h2, h3, .serif { font-family: var(--font-serif); }
 a { color: var(--color-accent-d); text-decoration: none; }
 .icon { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 
-.wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+@layer base {
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+}
 
 /* prose styling for topic article HTML coming from data.js */
 .prose-lda table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }

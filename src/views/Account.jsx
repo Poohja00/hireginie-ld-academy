@@ -66,7 +66,7 @@ export default function AccountSettings() {
 
   return (
     <motion.div {...pageMotion} className="py-14 pb-24">
-      <div className="wrap max-w-[680px]">
+      <div className="wrap" style={{ maxWidth: 680 }}>
         <Eyebrow>Account</Eyebrow>
         <h2 className="font-serif text-3xl mb-1">Profile details</h2>
         <p className="text-muted text-[13.5px] mb-7">* Required</p>

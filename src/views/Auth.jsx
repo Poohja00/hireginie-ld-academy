@@ -72,7 +72,7 @@ export default function Auth({ mode }) {
   if (emailSent) {
     return (
       <motion.div {...pageMotion} className="py-14 pb-24">
-        <div className="wrap max-w-[440px]">
+        <div className="wrap" style={{ maxWidth: 440 }}>
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
             className="bg-surface border border-line rounded-2xl p-8 shadow-[var(--shadow-soft)] text-center"

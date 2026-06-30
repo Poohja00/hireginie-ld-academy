@@ -41,7 +41,7 @@ export default function AdminLogin() {
 
   return (
     <motion.div {...pageMotion} className="py-14 pb-24">
-      <div className="wrap max-w-[440px]">
+      <div className="wrap" style={{ maxWidth: 440 }}>
         <div className="text-center text-xs tracking-[0.16em] uppercase text-accent-d font-semibold mb-2 flex items-center justify-center gap-1.5">
           <Icon name="shield" className="!w-3.5 !h-3.5" /> Admin access
         </div>

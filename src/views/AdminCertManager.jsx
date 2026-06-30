@@ -34,7 +34,7 @@ export default function AdminCertManager() {
 
   return (
     <motion.div {...pageMotion} className="py-14 pb-24">
-      <div className="wrap max-w-[1040px]">
+      <div className="wrap" style={{ maxWidth: 1040 }}>
         <Eyebrow>Admin</Eyebrow>
         <h2 className="font-serif text-3xl mb-1">Certificate template</h2>
         <p className="text-muted text-[15px] mb-7 max-w-[640px]">
