@@ -122,6 +122,14 @@ function Header() {
               </button>
             </>
           )}
+          {!user && (
+            <button
+              onClick={() => nav('/login')}
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent-d border border-accent/30 hover:border-accent hover:bg-accent-soft px-3.5 py-2 rounded-lg transition-colors"
+            >
+              <Icon name="shield" className="!w-3.5 !h-3.5" /> Login as admin
+            </button>
+          )}
         </div>
       </div>
     </header>

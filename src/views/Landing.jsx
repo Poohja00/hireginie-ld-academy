@@ -17,7 +17,7 @@ const MODULE_PALETTE = [
 ]
 
 function ModuleAccordion() {
-  const [open, setOpen] = useState(0)
+  const [open, setOpen] = useState(-1)
   return (
     <div className="relative">
       {/* connecting line */}
@@ -54,8 +54,8 @@ function ModuleAccordion() {
               >
                 <button
                   onClick={() => setOpen(isOpen ? -1 : i)}
-                  className="w-full flex items-start gap-4 px-5 py-4 text-left transition-colors bg-surface hover:bg-surface2"
-                  style={isOpen ? { background: p.light } : {}}
+                  className="w-full flex items-start gap-4 px-5 py-4 text-left transition-colors hover:brightness-[0.98]"
+                  style={{ background: p.light }}
                 >
                   {/* mobile number */}
                   <div
