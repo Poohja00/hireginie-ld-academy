@@ -27,7 +27,7 @@ function ModuleAccordion() {
         {MODULES.map((m, i) => {
           const ts = TOPICS.filter((t) => t.m === m.id)
           const isOpen = open === i
-          const p = MODULE_PALETTE[i] || MODULE_PALETTE[0]
+          const p = MODULE_PALETTE[0]
           const totalMins = ts.reduce((s, t) => s + (t.read || 0), 0)
 
           return (
