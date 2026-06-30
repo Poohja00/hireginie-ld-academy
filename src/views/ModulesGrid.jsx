@@ -10,7 +10,7 @@ export function moduleUnlocked(moduleId, progressSet) {
   return TOPICS.filter((t) => t.m === prev.id).every((t) => progressSet.has(t.id))
 }
 
-export default function ModulesGrid({ progress }) {
+export default function ModulesGrid({ progress, adminMode = false }) {
   const nav = useNavigate()
   return (
     <div className="grid gap-[18px] md:grid-cols-2">
@@ -18,7 +18,7 @@ export default function ModulesGrid({ progress }) {
         const ts = TOPICS.filter((t) => t.m === m.id)
         const done = ts.filter((t) => progress.has(t.id)).length
         const pct = Math.round((done / ts.length) * 100)
-        const unlocked = moduleUnlocked(m.id, progress)
+        const unlocked = adminMode ? true : moduleUnlocked(m.id, progress)
         const prevMod = i > 0 ? MODULES[i - 1] : null
 
         return (
@@ -37,37 +37,41 @@ export default function ModulesGrid({ progress }) {
                   : <Icon name="lock" className="!w-4 !h-4" />}
               </div>
               <div className="flex-1">
-                <div className="text-xs tracking-[0.1em] uppercase text-faint">Module {m.n} · {done}/{ts.length}</div>
+                <div className="text-xs tracking-[0.1em] uppercase text-faint">
+                  Module {m.n} {adminMode ? `· ${ts.length} topics` : `· ${done}/${ts.length}`}
+                </div>
                 <h3 className="m-0 text-[19px]">{m.title}</h3>
               </div>
-              {unlocked
+              {!adminMode && (unlocked
                 ? <div className="text-[13px] font-semibold text-accent-d tabular-nums">{pct}%</div>
-                : <Icon name="lock" className="text-faint !w-4 !h-4" />}
+                : <Icon name="lock" className="text-faint !w-4 !h-4" />)}
             </div>
 
-            <div className="h-1.5 bg-line2 rounded-full overflow-hidden mt-2 mb-3">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-accent to-accent-d"
-                initial={{ width: 0 }}
-                whileInView={{ width: pct + '%' }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, ease: 'easeOut' }}
-              />
-            </div>
+            {!adminMode && (
+              <div className="h-1.5 bg-line2 rounded-full overflow-hidden mt-2 mb-3">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-accent to-accent-d"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: pct + '%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, ease: 'easeOut' }}
+                />
+              </div>
+            )}
 
             {!unlocked ? (
-              <p className="text-faint text-sm mb-4 flex items-center gap-1.5">
+              <p className="text-faint text-sm mb-4 flex items-center gap-1.5 mt-2">
                 <Icon name="lock" className="!w-3.5 !h-3.5 flex-none" />
                 Complete <b className="text-muted">Module {prevMod?.n}</b> to unlock · {done}/{ts.length} topics done
               </p>
             ) : (
-              <p className="text-muted text-sm mb-4">{m.blurb}</p>
+              <p className={`text-muted text-sm mb-4 ${adminMode ? 'mt-2' : ''}`}>{m.blurb}</p>
             )}
 
             <div className="flex flex-col gap-0.5">
               {ts.map((t) => {
                 const isDone = progress.has(t.id)
-                if (!unlocked) {
+                if (!unlocked || adminMode) {
                   return (
                     <div key={t.id} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[14.5px] text-faint cursor-default">
                       <span className="w-2.5 h-2.5 rounded-full flex-none border-[1.6px] border-line2" />

@@ -90,9 +90,9 @@ export const Admin = {
     if (r.error) throw r.error
   },
 
-  // Builds a pre-filled mailto: link so the admin sends the reminder from
-  // their own inbox with one click + Send. No SMTP/API dependency, works
-  // for any recipient, and the admin sees the exact message before it goes.
+  // Builds a Gmail web-compose URL (not mailto:) so it opens reliably in a
+  // new tab without depending on the OS/browser having a mailto: handler
+  // registered. Admin reviews and clicks Send themselves from their own inbox.
   buildReminderMailto(email, name, pct) {
     const firstName = (name || '').trim().split(/\s+/)[0] || 'there'
     const subject = 'Finish your Hireginie L&D Academy course'
@@ -101,7 +101,8 @@ export const Admin = {
       `Whenever you get a chance, jump back in and pick up right where you left off:\n` +
       `https://learninganddevelopment-hireginie.vercel.app/#/dashboard\n\n` +
       `Best,\nPooja\nHireginie L&D Academy`
-    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    const params = new URLSearchParams({ view: 'cm', fs: '1', to: email, su: subject, body })
+    return `https://mail.google.com/mail/?${params.toString()}`
   },
 
   toCSV(users) {
