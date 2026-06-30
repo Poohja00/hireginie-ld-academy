@@ -10,7 +10,7 @@ export const CONFIG = {
   EXAM_TIME_MINUTES: 30,
 
   // From emailjs.com after connecting Gmail and creating a template.
-  EMAILJS_SERVICE_ID: "",
-  EMAILJS_TEMPLATE_ID: "",
-  EMAILJS_PUBLIC_KEY: "",
+  EMAILJS_SERVICE_ID: "service_pr4sx3x",
+  EMAILJS_TEMPLATE_ID: "template_m38plt4",
+  EMAILJS_PUBLIC_KEY: "1klK0nHl_t0PXXQsL",
 }
