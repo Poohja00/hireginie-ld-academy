@@ -98,8 +98,8 @@ export default function Certificate() {
                   <div className="font-serif text-[42px] mt-3.5 mb-1.5">{demoCert.full_name}</div>
                   <div className="w-[120px] h-px bg-accent mx-auto my-4" />
                   <div className="text-muted max-w-[520px] mx-auto">
-                    has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme — all {TOPICS.length} topics
-                    across 6 modules — and passed the certification exam with a score of <b>{demoCert.percent}%</b>.
+                    has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme - all {TOPICS.length} topics
+                    across 6 modules - and passed the certification exam with a score of <b>{demoCert.percent}%</b>.
                   </div>
                   <div className="flex justify-between mt-10 text-[13px]">
                     <div className="text-left">
@@ -124,7 +124,7 @@ export default function Certificate() {
                   <img src="/logo.png" alt="Hireginie" className="h-6 w-auto mx-auto mb-3 invert" />
                   <div className="font-serif text-[17px] mb-1">Receive this L&amp;D certificate</div>
                   <div className="text-white/60 text-[13px] mb-4">
-                    by Hireginie — achieve {THRESH}% or more on the final exam to unlock your certificate.
+                    by Hireginie - achieve {THRESH}% or more on the final exam to unlock your certificate.
                   </div>
                   {allTopics
                     ? <Button variant="accent" size="sm" onClick={() => nav('/exam')}>Take the exam now</Button>
@@ -158,8 +158,8 @@ export default function Certificate() {
           <div className="font-serif text-[42px] mt-3.5 mb-1.5">{cert.full_name}</div>
           <div className="w-[120px] h-px bg-accent mx-auto my-4" />
           <div className="text-muted max-w-[520px] mx-auto">
-            has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme — all {TOPICS.length} topics
-            across 6 modules — and passed the certification exam with a score of <b>{cert.percent}%</b>.
+            has successfully completed the <b>{CONFIG.BRAND} {CONFIG.PROGRAM_NAME}</b> programme - all {TOPICS.length} topics
+            across 6 modules - and passed the certification exam with a score of <b>{cert.percent}%</b>.
           </div>
           <div className="flex justify-between mt-10 text-[13px]">
             <div className="text-left">

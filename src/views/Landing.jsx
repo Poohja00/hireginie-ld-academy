@@ -171,7 +171,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="text-[#cbc7bd] text-lg max-w-[560px] mb-8"
             >
-              A complete, self-paced foundation in modern L&amp;D — 24 topics across 6 modules,
+              A complete, self-paced foundation in modern L&amp;D - 24 topics across 6 modules,
               a scenario-based certification exam, and a certificate to prove it.
             </motion.p>
             <motion.div
@@ -200,7 +200,7 @@ export default function Landing() {
         {/* modules */}
         <div className="mt-14 mb-2">
           <h2 className="font-serif text-3xl mb-1">There are {MODULES.length} modules in this course</h2>
-          <p className="text-muted text-[15px] mb-7">Six modules building from foundations to strategy — {TOPICS.length} topics in total.</p>
+          <p className="text-muted text-[15px] mb-7">Six modules building from foundations to strategy - {TOPICS.length} topics in total.</p>
           <ModuleAccordion />
         </div>
       </div>

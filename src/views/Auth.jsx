@@ -56,7 +56,7 @@ export default function Auth({ mode }) {
       } else if (msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('security purposes')) {
         setErr('Too many attempts. Please wait a moment before trying again.')
       } else if (msg.toLowerCase().includes('email not confirmed')) {
-        setErr('Please confirm your email first — check your inbox for the verification link.')
+        setErr('Please confirm your email first - check your inbox for the verification link.')
       } else {
         setErr(msg || 'Something went wrong. Please try again.')
       }
@@ -190,7 +190,7 @@ export default function Auth({ mode }) {
           )}
           {PREVIEW && (
             <div className="text-[13px] text-muted bg-surface2 border border-line2 rounded-xl p-3 mt-3.5">
-              Running in <b>preview mode</b> — your account and progress are stored only in this browser.
+              Running in <b>preview mode</b> - your account and progress are stored only in this browser.
               Add Supabase keys in <b>config.js</b> to enable real cross-device accounts.
             </div>
           )}

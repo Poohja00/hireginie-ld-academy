@@ -66,7 +66,7 @@ export default function Dashboard() {
             <div className="flex gap-3.5 flex-wrap mt-2.5">
               {[
                 [`${prog.size}/${TOPICS.length}`, 'Topics learned'],
-                [atts.length ? Math.round(best) + '%' : '—', 'Best exam score'],
+                [atts.length ? Math.round(best) + '%' : '-', 'Best exam score'],
                 [passed ? 'Yes' : 'Not yet', 'Certified'],
               ].map(([v, l]) => (
                 <div key={l} className="bg-surface2 border border-line2 rounded-xl px-4 py-3 min-w-[120px]">

@@ -40,7 +40,7 @@ function CertModal({ user, onClose, onIssue, onRevoke, busy }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-serif text-xl">Certificate — {user.full_name || user.email}</h3>
+          <h3 className="font-serif text-xl">Certificate - {user.full_name || user.email}</h3>
           <button onClick={onClose} className="text-muted hover:text-ink"><Icon name="x" /></button>
         </div>
 
@@ -78,7 +78,7 @@ function CertModal({ user, onClose, onIssue, onRevoke, busy }) {
           <>
             <p className="text-muted text-sm mb-4">
               This user hasn't earned a certificate yet ({user.topicsDone}/{user.topicsTotal} topics · best exam score {user.bestScore}%).
-              You can manually issue one below — useful for exceptions handled outside the platform.
+              You can manually issue one below - useful for exceptions handled outside the platform.
             </p>
             <div className="bg-surface border border-line rounded-xl p-4 flex flex-col gap-3">
               <div>
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
     if (!targets.length) return showToast('No matching learners below that threshold')
     setStatusFilter('active')
     setCertFilter('not-certified')
-    showToast(`Filtered to ${targets.length} learner(s) below ${bulkThreshold}% — click the mail icon on each to send`)
+    showToast(`Filtered to ${targets.length} learner(s) below ${bulkThreshold}% - click the mail icon on each to send`)
   }
 
   async function issueCert(userId, name, percent) {
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
                 {u.topicsDone}/{u.topicsTotal} · {u.pct}%
               </div>
               <div className="text-[13.5px] text-muted">
-                {u.attemptCount ? `${u.bestScore}% (${u.attemptCount})` : '—'}
+                {u.attemptCount ? `${u.bestScore}% (${u.attemptCount})` : '-'}
               </div>
               <div>
                 {u.certified

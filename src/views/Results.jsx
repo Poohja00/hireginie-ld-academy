@@ -71,7 +71,7 @@ export default function Results() {
             </Ring>
           </motion.div>
           <div className="flex-1 min-w-[260px]">
-            <b className="font-serif text-[26px]">{r.passed ? 'Congratulations — you passed.' : 'Not quite there yet.'}</b>
+            <b className="font-serif text-[26px]">{r.passed ? 'Congratulations - you passed.' : 'Not quite there yet.'}</b>
             <div className="mt-1.5">
               <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[13px] font-semibold ${r.passed ? 'bg-good-soft text-good' : 'bg-bad-soft text-bad'}`}>
                 <Icon name={r.passed ? 'check' : 'arrow'} />
@@ -79,7 +79,7 @@ export default function Results() {
               </span>
             </div>
             <p className="text-muted text-sm mt-3 max-w-[440px]">
-              {r.passed ? 'Mark any remaining topics as learned to unlock your certificate.' : 'Review the modules below and retake the exam — questions are randomised each time.'}
+              {r.passed ? 'Mark any remaining topics as learned to unlock your certificate.' : 'Review the modules below and retake the exam - questions are randomised each time.'}
             </p>
             <div className="flex gap-2.5 flex-wrap mt-3">
               <Button variant="ghost" size="sm" onClick={() => { ExamState.current = null; nav('/exam') }}>Retake exam</Button>
@@ -100,7 +100,7 @@ export default function Results() {
                 <div className="h-2.5 bg-line2 rounded-full overflow-hidden">
                   <motion.div className="h-full rounded-full" style={{ background: c }} initial={{ width: 0 }} animate={{ width: p + '%' }} transition={{ delay: 0.1 + idx * 0.08, duration: 0.6 }} />
                 </div>
-                <div className="text-right font-semibold tabular-nums">{b.t ? p + '%' : '—'}</div>
+                <div className="text-right font-semibold tabular-nums">{b.t ? p + '%' : '-'}</div>
               </div>
             )
           })}
