@@ -76,15 +76,21 @@ export const Admin = {
     if (r.error) throw r.error
   },
 
-  // Calls the send-reminder Edge Function, which holds the Resend API key
-  // server-side. Requires an authenticated admin session (verified in the function).
-  async sendReminder(email, name, pct) {
+  // Sends Supabase's built-in Magic Link email — repurposed as a personalized
+  // "continue your course" nudge. Customize the wording in Supabase dashboard
+  // under Authentication > Email Templates > Magic Link. Clicking it also
+  // signs the learner straight back into their dashboard.
+  async sendReminder(email, _name, _pct) {
     assertSB()
-    const { data, error } = await sb.functions.invoke('send-reminder', {
-      body: { email, name, progressPct: pct },
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: 'https://learninganddevelopment-hireginie.vercel.app/#/dashboard',
+      },
     })
     if (error) throw new Error(error.message || 'Failed to send reminder email.')
-    return data
+    return { ok: true }
   },
 
   toCSV(users) {
