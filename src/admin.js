@@ -76,21 +76,18 @@ export const Admin = {
     if (r.error) throw r.error
   },
 
-  // Sends Supabase's built-in Magic Link email — repurposed as a personalized
-  // "continue your course" nudge. Customize the wording in Supabase dashboard
-  // under Authentication > Email Templates > Magic Link. Clicking it also
-  // signs the learner straight back into their dashboard.
-  async sendReminder(email, _name, _pct) {
-    assertSB()
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-        emailRedirectTo: 'https://learninganddevelopment-hireginie.vercel.app/#/dashboard',
-      },
-    })
-    if (error) throw new Error(error.message || 'Failed to send reminder email.')
-    return { ok: true }
+  // Builds a pre-filled mailto: link so the admin sends the reminder from
+  // their own inbox with one click + Send. No SMTP/API dependency, works
+  // for any recipient, and the admin sees the exact message before it goes.
+  buildReminderMailto(email, name, pct) {
+    const firstName = (name || '').trim().split(/\s+/)[0] || 'there'
+    const subject = 'Finish your Hireginie L&D Academy course'
+    const body = `Hi ${firstName},\n\n` +
+      `You're ${pct}% through the Hireginie L&D Academy course — wanted to check in and see how it's going.\n\n` +
+      `Whenever you get a chance, jump back in and pick up right where you left off:\n` +
+      `https://learninganddevelopment-hireginie.vercel.app/#/dashboard\n\n` +
+      `Best,\nPooja\nHireginie L&D Academy`
+    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   },
 
   toCSV(users) {

@@ -116,7 +116,6 @@ export default function AdminDashboard() {
   const [busyId, setBusyId] = useState(null)
   const [certUser, setCertUser] = useState(null)
   const [bulkThreshold, setBulkThreshold] = useState(50)
-  const [bulkBusy, setBulkBusy] = useState(false)
 
   async function load() {
     try {
@@ -173,27 +172,17 @@ export default function AdminDashboard() {
     setBusyId(null)
   }
 
-  async function remind(u) {
-    setBusyId(u.id)
-    try {
-      await Admin.sendReminder(u.email, u.full_name, u.pct)
-      showToast(`Reminder sent to ${u.email}`)
-    } catch (e) {
-      showToast(e.message || 'Could not send reminder')
-    }
-    setBusyId(null)
+  function remind(u) {
+    window.location.href = Admin.buildReminderMailto(u.email, u.full_name, u.pct)
+    showToast(`Opening a reminder email to ${u.email}…`)
   }
 
-  async function bulkRemind() {
+  function bulkRemind() {
     const targets = filtered.filter((u) => !u.suspended && !u.certified && u.pct < bulkThreshold)
-    if (!targets.length) return showToast('No matching users below that threshold')
-    setBulkBusy(true)
-    let sent = 0
-    for (const u of targets) {
-      try { await Admin.sendReminder(u.email, u.full_name, u.pct); sent++ } catch {}
-    }
-    setBulkBusy(false)
-    showToast(`Sent ${sent}/${targets.length} reminder emails`)
+    if (!targets.length) return showToast('No matching learners below that threshold')
+    setStatusFilter('active')
+    setCertFilter('not-certified')
+    showToast(`Filtered to ${targets.length} learner(s) below ${bulkThreshold}% — click the mail icon on each to send`)
   }
 
   async function issueCert(userId, name, percent) {
@@ -264,15 +253,15 @@ export default function AdminDashboard() {
         {/* bulk remind */}
         <div className="bg-surface2 border border-line2 rounded-xl px-4 py-3 mb-5 flex items-center gap-3 flex-wrap">
           <Icon name="mail" className="!w-4 !h-4 text-muted" />
-          <span className="text-[13.5px] text-muted">Remind everyone (not certified, not suspended) below</span>
+          <span className="text-[13.5px] text-muted">Find everyone (not certified, not suspended) below</span>
           <input
             type="number" min="0" max="100" value={bulkThreshold}
             onChange={(e) => setBulkThreshold(Number(e.target.value))}
             className="w-16 px-2 py-1 border border-line rounded-lg text-[13.5px] bg-surface text-center"
           />
-          <span className="text-[13.5px] text-muted">% progress</span>
-          <Button size="sm" variant="ghost" className="ml-auto" onClick={bulkRemind} disabled={bulkBusy}>
-            {bulkBusy ? 'Sending…' : 'Send bulk reminder'}
+          <span className="text-[13.5px] text-muted">% progress, then remind each from the list below</span>
+          <Button size="sm" variant="ghost" className="ml-auto" onClick={bulkRemind}>
+            Filter list
           </Button>
         </div>
 
@@ -347,7 +336,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex justify-end gap-1.5">
                 <button
-                  title="Send reminder email" onClick={() => remind(u)} disabled={busyId === u.id || u.suspended}
+                  title="Send reminder email" onClick={() => remind(u)} disabled={u.suspended}
                   className="w-8 h-8 grid place-items-center rounded-lg border border-line text-muted hover:text-accent-d hover:border-accent disabled:opacity-30"
                 ><Icon name="mail" className="!w-4 !h-4" /></button>
                 <button
