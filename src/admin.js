@@ -1,5 +1,9 @@
+import emailjs from '@emailjs/browser'
 import { sb, useSB } from './store.js'
 import { TOPICS } from './data.js'
+import { CONFIG } from './config.js'
+
+export const emailJsConfigured = !!(CONFIG.EMAILJS_SERVICE_ID && CONFIG.EMAILJS_TEMPLATE_ID && CONFIG.EMAILJS_PUBLIC_KEY)
 
 function assertSB() {
   if (!useSB) throw new Error('Admin tools require Supabase to be configured.')
@@ -90,9 +94,23 @@ export const Admin = {
     if (r.error) throw r.error
   },
 
-  // Builds a Gmail web-compose URL (not mailto:) so it opens reliably in a
-  // new tab without depending on the OS/browser having a mailto: handler
-  // registered. Admin reviews and clicks Send themselves from their own inbox.
+  // Sends a real HTML email (with a graphical CTA button) directly from the
+  // browser via EmailJS, which relays through the admin's connected Gmail
+  // account over OAuth -- no SMTP timeouts, no domain verification needed.
+  async sendReminderEmail(email, name, pct) {
+    if (!emailJsConfigured) throw new Error('EmailJS is not configured yet.')
+    const firstName = (name || '').trim().split(/\s+/)[0] || 'there'
+    await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
+      to_email: email,
+      to_name: firstName,
+      progress_pct: pct,
+      dashboard_url: 'https://learninganddevelopment-hireginie.vercel.app/#/dashboard',
+    }, { publicKey: CONFIG.EMAILJS_PUBLIC_KEY })
+  },
+
+  // Fallback: builds a Gmail web-compose URL (not mailto:) so it opens
+  // reliably in a new tab without depending on a mailto: handler. Used when
+  // EmailJS isn't configured yet -- admin reviews and clicks Send themselves.
   buildReminderMailto(email, name, pct) {
     const firstName = (name || '').trim().split(/\s+/)[0] || 'there'
     const subject = 'Finish your Hireginie L&D Academy course'

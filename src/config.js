@@ -8,4 +8,9 @@ export const CONFIG = {
   CERT_REQUIRE_ALL_TOPICS: true,
   EXAM_QUESTION_COUNT: 25,
   EXAM_TIME_MINUTES: 30,
+
+  // From emailjs.com after connecting Gmail and creating a template.
+  EMAILJS_SERVICE_ID: "",
+  EMAILJS_TEMPLATE_ID: "",
+  EMAILJS_PUBLIC_KEY: "",
 }
