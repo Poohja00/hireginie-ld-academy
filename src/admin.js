@@ -97,9 +97,12 @@ export const Admin = {
     const firstName = (name || '').trim().split(/\s+/)[0] || 'there'
     const subject = 'Finish your Hireginie L&D Academy course'
     const body = `Hi ${firstName},\n\n` +
-      `You're ${pct}% through the Hireginie L&D Academy course - wanted to check in and see how it's going.\n\n` +
-      `Whenever you get a chance, jump back in and pick up right where you left off:\n` +
-      `https://learninganddevelopment-hireginie.vercel.app/#/dashboard\n\n` +
+      `You're ${pct}% through the Hireginie L&D Academy course - just checking in to see how it's going!\n\n` +
+      `------------------------------------\n` +
+      `   CONTINUE MY COURSE\n` +
+      `   https://learninganddevelopment-hireginie.vercel.app/#/dashboard\n` +
+      `------------------------------------\n\n` +
+      `Whenever you get a chance, jump back in and pick up right where you left off.\n\n` +
       `Best,\nPooja\nHireginie L&D Academy`
     const params = new URLSearchParams({ view: 'cm', fs: '1', to: email, su: subject, body, authuser: 'pooja.hireginie@gmail.com' })
     return `https://mail.google.com/mail/?${params.toString()}`
