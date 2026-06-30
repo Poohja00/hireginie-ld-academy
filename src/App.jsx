@@ -14,6 +14,7 @@ import Exam from './views/Exam.jsx'
 import Results from './views/Results.jsx'
 import Certificate from './views/Certificate.jsx'
 import AdminDashboard from './views/AdminDashboard.jsx'
+import AdminLogin from './views/AdminLogin.jsx'
 
 function initials(n, e) {
   n = n || e || ''
@@ -124,7 +125,7 @@ function Header() {
           )}
           {!user && (
             <button
-              onClick={() => nav('/login')}
+              onClick={() => nav('/admin-login')}
               className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent-d border border-accent/30 hover:border-accent hover:bg-accent-soft px-3.5 py-2 rounded-lg transition-colors"
             >
               <Icon name="shield" className="!w-3.5 !h-3.5" /> Login as admin
@@ -172,6 +173,7 @@ export default function App() {
             <Route path="/results" element={<Protected><Results /></Protected>} />
             <Route path="/certificate" element={<Protected><Certificate /></Protected>} />
             <Route path="/admin" element={<AdminProtected><AdminDashboard /></AdminProtected>} />
+            <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </motion.div>
