@@ -15,6 +15,7 @@ import Results from './views/Results.jsx'
 import Certificate from './views/Certificate.jsx'
 import AdminDashboard from './views/AdminDashboard.jsx'
 import AdminLogin from './views/AdminLogin.jsx'
+import AccountSettings from './views/Account.jsx'
 
 function initials(n, e) {
   n = n || e || ''
@@ -35,7 +36,7 @@ const ADMIN_NAV = [
 ]
 
 function Header() {
-  const { user, isAdmin, refreshUser } = useApp()
+  const { user, profile, isAdmin, refreshUser } = useApp()
   const nav = useNavigate()
 
   async function signOut() {
@@ -120,9 +121,15 @@ function Header() {
           )}
           {user && (
             <>
-              <div className="w-8 h-8 rounded-full bg-accent-soft text-accent-d grid place-items-center font-semibold text-[13px]">
-                {initials(user.name, user.email)}
-              </div>
+              <button
+                onClick={() => nav('/account')}
+                title="Account settings"
+                className="w-8 h-8 rounded-full bg-accent-soft text-accent-d grid place-items-center font-semibold text-[13px] overflow-hidden hover:ring-2 hover:ring-accent/30 transition-shadow"
+              >
+                {profile && profile.avatar_url
+                  ? <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                  : initials(user.name, user.email)}
+              </button>
               <button onClick={signOut} className="inline-flex items-center gap-1.5 text-[13px] text-muted hover:text-ink px-2 py-1.5">
                 <Icon name="logout" /> Sign out
               </button>
@@ -184,6 +191,7 @@ export default function App() {
             <Route path="/exam" element={<LearnerOnly><Exam /></LearnerOnly>} />
             <Route path="/results" element={<LearnerOnly><Results /></LearnerOnly>} />
             <Route path="/certificate" element={<Protected><Certificate /></Protected>} />
+            <Route path="/account" element={<Protected><AccountSettings /></Protected>} />
             <Route path="/admin" element={<AdminProtected><AdminDashboard /></AdminProtected>} />
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="*" element={<Navigate to="/" replace />} />
