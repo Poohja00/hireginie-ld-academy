@@ -7,85 +7,124 @@ import { useApp } from '../app-context.jsx'
 import { Icon } from '../icons.jsx'
 import { Button, pageMotion } from '../ui.jsx'
 
-const MODULE_COLORS = [
-  { bg: 'bg-[#fdf3ee]', badge: 'bg-[#f0d5c8] text-[#a04d2a]', dot: 'bg-[#d2613a]' },
-  { bg: 'bg-[#eef4fd]', badge: 'bg-[#c8d9f0] text-[#2a4da0]', dot: 'bg-[#3a61d2]' },
-  { bg: 'bg-[#f0fdf4]', badge: 'bg-[#c8f0d5] text-[#1a6e39]', dot: 'bg-[#22a355]' },
-  { bg: 'bg-[#fdf8ee]', badge: 'bg-[#f0e8c8] text-[#8a6010]', dot: 'bg-[#c8920a]' },
-  { bg: 'bg-[#f5eeff]', badge: 'bg-[#e0c8f5] text-[#6a2aa0]', dot: 'bg-[#9b4dd2]' },
-  { bg: 'bg-[#fff0f3]', badge: 'bg-[#f5c8d0] text-[#a02a40]', dot: 'bg-[#d23a55]' },
+const MODULE_PALETTE = [
+  { accent: '#d2613a', light: '#fdf3ee', text: '#a04d2a' },
+  { accent: '#3a61d2', light: '#eef4fd', text: '#2a4da0' },
+  { accent: '#22a355', light: '#f0fdf4', text: '#1a6e39' },
+  { accent: '#c8920a', light: '#fdf8ee', text: '#8a6010' },
+  { accent: '#9b4dd2', light: '#f5eeff', text: '#6a2aa0' },
+  { accent: '#d23a55', light: '#fff0f3', text: '#a02a40' },
 ]
 
 function ModuleAccordion() {
   const [open, setOpen] = useState(0)
   return (
-    <div className="flex flex-col gap-3">
-      {MODULES.map((m, i) => {
-        const ts = TOPICS.filter((t) => t.m === m.id)
-        const isOpen = open === i
-        const c = MODULE_COLORS[i] || MODULE_COLORS[0]
-        return (
-          <motion.div
-            key={m.id}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ delay: i * 0.05, type: 'spring', stiffness: 240, damping: 26 }}
-            className={`rounded-2xl border border-line overflow-hidden transition-shadow ${isOpen ? 'shadow-[var(--shadow-soft)]' : ''}`}
-          >
-            <button
-              onClick={() => setOpen(isOpen ? -1 : i)}
-              className={`w-full flex items-center gap-4 px-5 py-4 text-left transition-colors ${isOpen ? c.bg : 'bg-surface hover:bg-surface2'}`}
+    <div className="relative">
+      {/* connecting line */}
+      <div className="absolute left-[27px] top-10 bottom-10 w-[2px] bg-line hidden md:block" />
+
+      <div className="flex flex-col gap-4">
+        {MODULES.map((m, i) => {
+          const ts = TOPICS.filter((t) => t.m === m.id)
+          const isOpen = open === i
+          const p = MODULE_PALETTE[i] || MODULE_PALETTE[0]
+          const totalMins = ts.reduce((s, t) => s + (t.read || 0), 0)
+
+          return (
+            <motion.div
+              key={m.id}
+              initial={{ opacity: 0, x: -16 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-30px' }}
+              transition={{ delay: i * 0.06, type: 'spring', stiffness: 240, damping: 26 }}
+              className="flex gap-4 items-start"
             >
-              <div className={`w-9 h-9 rounded-xl grid place-items-center flex-none text-[13px] font-bold ${c.badge}`}>
-                {m.n}
+              {/* step badge */}
+              <div
+                className="relative z-10 w-14 h-14 rounded-2xl grid place-items-center flex-none shadow-[0_2px_8px_rgba(0,0,0,0.12)] hidden md:grid"
+                style={{ background: p.accent }}
+              >
+                <span className="text-white font-bold text-lg leading-none">{m.n}</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-[15px] leading-snug">{m.title}</div>
-                <div className="text-[13px] text-muted mt-0.5">{m.blurb}</div>
-              </div>
-              <div className="flex items-center gap-3 flex-none">
-                <span className="hidden sm:block text-[12px] text-muted whitespace-nowrap">{ts.length} topics</span>
-                <motion.svg
-                  animate={{ rotate: isOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                  className="text-muted flex-none"
+
+              {/* card */}
+              <div
+                className="flex-1 rounded-2xl border overflow-hidden transition-shadow"
+                style={{ borderColor: isOpen ? p.accent + '60' : undefined, boxShadow: isOpen ? `0 4px 20px ${p.accent}18` : undefined }}
+              >
+                <button
+                  onClick={() => setOpen(isOpen ? -1 : i)}
+                  className="w-full flex items-start gap-4 px-5 py-4 text-left transition-colors bg-surface hover:bg-surface2"
+                  style={isOpen ? { background: p.light } : {}}
                 >
-                  <path d="M6 9l6 6 6-6" />
-                </motion.svg>
-              </div>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  key="content"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.22, ease: 'easeInOut' }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-5 pt-1 pb-4 grid sm:grid-cols-2 gap-x-6 gap-y-0.5 bg-surface">
-                    {ts.map((t, ti) => (
-                      <div key={t.id} className="flex items-center gap-3 py-2 border-b border-line/60 last:border-0 sm:even:border-0">
-                        <span className={`w-5 h-5 rounded-full grid place-items-center flex-none text-[10px] font-bold text-white ${c.dot}`}>
-                          {ti + 1}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[14px] text-ink">{t.title}</span>
-                        </div>
-                        <span className="text-[11px] text-faint flex-none">{t.read} min</span>
-                      </div>
-                    ))}
+                  {/* mobile number */}
+                  <div
+                    className="w-8 h-8 rounded-xl grid place-items-center flex-none text-[13px] font-bold text-white md:hidden"
+                    style={{ background: p.accent }}
+                  >
+                    {m.n}
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        )
-      })}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <span className="text-[11px] font-semibold tracking-[0.1em] uppercase" style={{ color: p.text }}>
+                        Module {m.n}
+                      </span>
+                      <span className="text-faint text-[11px]">·</span>
+                      <span className="text-[11px] text-faint">{ts.length} topics · ~{totalMins} min</span>
+                    </div>
+                    <div className="font-semibold text-[17px] leading-snug">{m.title}</div>
+                    <div className="text-[13px] text-muted mt-1 leading-relaxed">{m.blurb}</div>
+                  </div>
+                  <motion.svg
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    className="flex-none mt-1" style={{ color: isOpen ? p.accent : undefined }}
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </motion.svg>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="body"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.24, ease: 'easeInOut' }}
+                      className="overflow-hidden bg-surface"
+                    >
+                      <div
+                        className="h-[2px] w-full"
+                        style={{ background: `linear-gradient(90deg, ${p.accent}, transparent)` }}
+                      />
+                      <div className="px-5 py-4 grid sm:grid-cols-2 gap-2">
+                        {ts.map((t, ti) => (
+                          <div
+                            key={t.id}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-line bg-bg"
+                          >
+                            <span
+                              className="w-6 h-6 rounded-lg grid place-items-center flex-none text-[11px] font-bold text-white"
+                              style={{ background: p.accent + 'cc' }}
+                            >
+                              {ti + 1}
+                            </span>
+                            <span className="flex-1 text-[13.5px] text-ink">{t.title}</span>
+                            <span className="text-[11px] text-faint flex-none">{t.read}m</span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
     </div>
   )
 }

@@ -5,22 +5,35 @@ const useSB = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY)
 const sb = useSB ? createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY) : null
 
 export const PREVIEW = !useSB
+export { sb, useSB }
 
 function L(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d } catch { return d } }
 function S(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} }
 
 export const Store = {
   user: null,
+  profile: null,
   async init() {
     if (useSB) {
       const r = await sb.auth.getUser()
       this.user = r.data.user
         ? { id: r.data.user.id, email: r.data.user.email, name: (r.data.user.user_metadata || {}).full_name || '' }
         : null
+      if (this.user) {
+        this.profile = await this.getProfile()
+        if (this.profile && this.profile.suspended) {
+          await this.signOut()
+        }
+      }
     } else {
       this.user = L('lda_session', null)
     }
     return this.user
+  },
+  async getProfile() {
+    if (!useSB || !this.user) return null
+    const r = await sb.from('profiles').select('*').eq('id', this.user.id).single()
+    return r.data || null
   },
   async signUp(name, email, pw) {
     if (useSB) {
@@ -44,6 +57,11 @@ export const Store = {
       const r = await sb.auth.signInWithPassword({ email, password: pw })
       if (r.error) throw r.error
       this.user = { id: r.data.user.id, email, name: (r.data.user.user_metadata || {}).full_name || '' }
+      this.profile = await this.getProfile()
+      if (this.profile && this.profile.suspended) {
+        await this.signOut()
+        throw new Error('Your access has been suspended. Contact your administrator.')
+      }
       return
     }
     const us = L('lda_users', {})
@@ -54,6 +72,7 @@ export const Store = {
     if (useSB) await sb.auth.signOut()
     else localStorage.removeItem('lda_session')
     this.user = null
+    this.profile = null
   },
   key(s) { return 'lda_' + s + '_' + (this.user ? this.user.id : 'guest') },
   async getProgress() {

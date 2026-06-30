@@ -13,6 +13,7 @@ import Topic from './views/Topic.jsx'
 import Exam from './views/Exam.jsx'
 import Results from './views/Results.jsx'
 import Certificate from './views/Certificate.jsx'
+import AdminDashboard from './views/AdminDashboard.jsx'
 
 function initials(n, e) {
   n = n || e || ''
@@ -28,7 +29,7 @@ const NAV = [
 ]
 
 function Header() {
-  const { user, refreshUser } = useApp()
+  const { user, isAdmin, refreshUser } = useApp()
   const nav = useNavigate()
 
   async function signOut() {
@@ -78,6 +79,30 @@ function Header() {
                 )}
               </NavLink>
             ))}
+            {isAdmin && (
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive ? 'text-ink' : 'text-accent-d hover:text-ink'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-pill"
+                        className="absolute inset-0 bg-surface rounded-lg shadow-[var(--shadow-soft)]"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                    <Icon name="shield" className="relative !w-3.5 !h-3.5" />
+                    <span className="relative">Admin</span>
+                  </>
+                )}
+              </NavLink>
+            )}
           </nav>
         )}
 
@@ -109,6 +134,13 @@ function Protected({ children }) {
   return children
 }
 
+function AdminProtected({ children }) {
+  const { user, isAdmin } = useApp()
+  if (!user) return <Navigate to="/login" replace />
+  if (!isAdmin) return <Navigate to="/dashboard" replace />
+  return children
+}
+
 export default function App() {
   const location = useLocation()
   return (
@@ -131,6 +163,7 @@ export default function App() {
             <Route path="/exam" element={<Protected><Exam /></Protected>} />
             <Route path="/results" element={<Protected><Results /></Protected>} />
             <Route path="/certificate" element={<Protected><Certificate /></Protected>} />
+            <Route path="/admin" element={<AdminProtected><AdminDashboard /></AdminProtected>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </motion.div>

@@ -15,7 +15,7 @@ if (window.location.hash.includes('access_token=')) {
 
 createRoot(document.getElementById('root')).render(
   <HashRouter>
-    <AppProvider initialUser={Store.user}>
+    <AppProvider initialUser={Store.user} initialProfile={Store.profile}>
       <App />
     </AppProvider>
   </HashRouter>

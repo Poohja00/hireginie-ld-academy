@@ -33,6 +33,13 @@ const P = {
   bolt: '<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>',
   play: '<path d="M7 4v16l13-8z"/>',
   lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="m5.5 5.5 13 13"/>',
+  download: '<path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/>',
+  upload: '<path d="M12 21V9"/><path d="m7 13 5-5 5 5"/><path d="M5 21h14"/>',
+  x: '<path d="M18 6 6 18"/><path d="M6 6l12 12"/>',
+  refresh: '<path d="M21 12a9 9 0 0 1-15.3 6.3M3 12a9 9 0 0 1 15.3-6.3"/><path d="M21 4v6h-6"/><path d="M3 20v-6h6"/>',
 }
 
 export function Icon({ name, className = '' }) {

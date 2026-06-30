@@ -5,8 +5,9 @@ import { Store } from './store.js'
 const Ctx = createContext(null)
 export const useApp = () => useContext(Ctx)
 
-export function AppProvider({ children, initialUser }) {
+export function AppProvider({ children, initialUser, initialProfile }) {
   const [user, setUser] = useState(initialUser)
+  const [profile, setProfile] = useState(initialProfile || null)
   const [toast, setToast] = useState(null)
   const timer = useRef(null)
 
@@ -16,10 +17,13 @@ export function AppProvider({ children, initialUser }) {
     timer.current = setTimeout(() => setToast(null), 2200)
   }, [])
 
-  const refreshUser = useCallback(() => setUser(Store.user ? { ...Store.user } : null), [])
+  const refreshUser = useCallback(() => {
+    setUser(Store.user ? { ...Store.user } : null)
+    setProfile(Store.profile ? { ...Store.profile } : null)
+  }, [])
 
   return (
-    <Ctx.Provider value={{ user, setUser, refreshUser, showToast }}>
+    <Ctx.Provider value={{ user, setUser, profile, isAdmin: !!(profile && profile.is_admin), refreshUser, showToast }}>
       {children}
       <AnimatePresence>
         {toast && (
