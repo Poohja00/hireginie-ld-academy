@@ -101,7 +101,7 @@ export const Admin = {
       `Whenever you get a chance, jump back in and pick up right where you left off:\n` +
       `https://learninganddevelopment-hireginie.vercel.app/#/dashboard\n\n` +
       `Best,\nPooja\nHireginie L&D Academy`
-    const params = new URLSearchParams({ view: 'cm', fs: '1', to: email, su: subject, body })
+    const params = new URLSearchParams({ view: 'cm', fs: '1', to: email, su: subject, body, authuser: 'pooja.hireginie@gmail.com' })
     return `https://mail.google.com/mail/?${params.toString()}`
   },
 
